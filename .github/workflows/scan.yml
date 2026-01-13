@@ -1,0 +1,21 @@
+name: Security Scan
+
+on: [push]
+
+jobs:
+  build-analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build Image
+        run: docker build -t secure-site .
+
+      - name: Run Trivy Vulnerability Scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'secure-site'  # The name of the image we just built
+          format: 'table'           # Output results in a nice table
+          exit-code: '1'            
+          severity: 'CRITICAL,HIGH' # Only look for really bad issues (ignore minor ones)
